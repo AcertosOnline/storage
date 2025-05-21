@@ -7,18 +7,16 @@ jobs:
   clean:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necessário para obter todo o histórico do repositório
+          fetch-depth: 0
       - name: Install git-filter-repo
-        run: |
-          sudo pip install git-filter-repo
-      - name: Remove files in upload directory from history
-        run: |
-          git filter-repo --path-glob 'upload/*' --invert-paths --force
-      - name: Force push to main
-        run: |
-          git push origin main --force
+        run: sudo pip install git-filter-repo
+      - name: Remove file from history
+        run: git filter-repo --path-glob 'upload/*' --invert-paths --force
+      - name: Re-add origin remote
+        run: git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      - name: Force push
+        run: git push origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
