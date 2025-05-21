@@ -17,6 +17,9 @@ jobs:
       - name: Remove files in upload directory from history
         run: |
           git filter-repo --path-glob 'upload/*' --invert-paths --force
+      - name: Restore origin remote
+        run: |
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
       - name: Force push to main
         run: |
           git push origin main --force
