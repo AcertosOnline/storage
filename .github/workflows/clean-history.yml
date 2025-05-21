@@ -1,22 +1,24 @@
 name: Clean Git History
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'  # Meia-noite no Horário de Brasília (03:00 UTC)
+  workflow_dispatch:  # Permite execução manual
 jobs:
   clean:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Necessário para obter todo o histórico
       - name: Install git-filter-repo
-        run: sudo pip install git-filter-repo
-      - name: Remove file from history
-        run: git filter-repo --path-glob 'upload/*' --invert-paths --force
-      - name: Re-add origin remote
-        run: git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-      - name: Force push
-        run: git push origin main --force
+        run: |
+          sudo pip install git-filter-repo
+      - name: Remove files in upload directory from history
+        run: |
+          git filter-repo --path-glob 'upload/*' --invert-paths --force
+      - name: Force push to main
+        run: |
+          git push origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
