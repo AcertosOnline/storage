@@ -1,0 +1,17 @@
+name: Clean Git History
+on:
+  push:
+    branches: [main]
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install git-filter-repo
+        run: sudo pip install git-filter-repo
+      - name: Remove file from history
+        run: git filter-repo --path upload/video.mp4 --invert-paths
+      - name: Force push
+        run: git push origin main --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
